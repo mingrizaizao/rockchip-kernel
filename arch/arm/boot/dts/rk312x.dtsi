@@ -386,14 +386,14 @@
 			opp-hz = /bits/ 64 <300000000>;
 			opp-microvolt = <1050000>;
 		};
-		opp-400000000 {
+		/*opp-400000000 {
 			opp-hz = /bits/ 64 <400000000>;
 			opp-microvolt = <1150000>;
 		};
 		opp-480000000 {
 			opp-hz = /bits/ 64 <480000000>;
 			opp-microvolt = <1250000>;
-		};
+		};*/
 	};
 
 	pmu: syscon@100a0000 {
@@ -897,6 +897,17 @@
 		nandc_id = <0>;
 		clocks = <&cru SCLK_NANDC>, <&cru HCLK_NANDC>;
 		clock-names = "clk_nandc", "hclk_nandc";
+
+		pinctrl-names = "default";
+		pinctrl-0 = <
+			&nandc_ale
+			&nandc_cle
+			&nandc_wrn
+			&nandc_rdn
+			&nandc_rdy
+			&nandc_cs0
+			&nandc_data
+		>;
 		status = "disabled";
 	};
 
@@ -1498,6 +1509,45 @@
 						<1 RK_PC3 1 &pcfg_pull_default>,
 						<1 RK_PC4 1 &pcfg_pull_default>,
 						<1 RK_PC5 1 &pcfg_pull_default>;
+			};
+		};
+
+
+		nandc {
+
+			nandc_ale: nandc-ale {
+				rockchip,pins = <2 RK_PA0 1 &pcfg_pull_default>;
+			};
+
+			nandc_cle: nandc-cle {
+				rockchip,pins = <2 RK_PA1 1 &pcfg_pull_default>;
+			};
+
+			nandc_wrn: nandc-wrn {
+				rockchip,pins = <2 RK_PA2 1 &pcfg_pull_default>;
+			};
+
+			nandc_rdn: nandc-rdn {
+				rockchip,pins = <2 RK_PA3 1 &pcfg_pull_default>;
+			};
+
+			nandc_rdy: nandc-rdy {
+				rockchip,pins = <2 RK_PA4 1 &pcfg_pull_default>;
+			};
+
+			nandc_cs0: nandc-cs0 {
+				rockchip,pins = <2 RK_PA6 1 &pcfg_pull_default>;
+			};
+
+			nandc_data: nandc-data {
+				rockchip,pins = <1 RK_PD0 1 &pcfg_pull_default>,
+						<1 RK_PD1 1 &pcfg_pull_default>,
+						<1 RK_PD2 1 &pcfg_pull_default>,
+						<1 RK_PD3 1 &pcfg_pull_default>,
+						<1 RK_PD4 1 &pcfg_pull_default>,
+						<1 RK_PD5 1 &pcfg_pull_default>,
+						<1 RK_PD6 1 &pcfg_pull_default>,
+						<1 RK_PD7 1 &pcfg_pull_default>;
 			};
 		};
 

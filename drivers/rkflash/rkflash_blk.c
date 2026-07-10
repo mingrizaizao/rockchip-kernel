@@ -125,7 +125,11 @@ static unsigned int rk_partition_init(struct flash_part *part)
 	if (!g_part)
 		return 0;
 	mutex_lock(&g_flash_ops_mutex);
+	pr_err("rk_partition_init: tag = 0x%08x, expected = 0x%08x\n",
+		g_part->hdr.ui_fw_tag, RK_PARTITION_TAG);
 	if (g_boot_ops->read(0, 4, g_part) == 0) {
+		    pr_err("rk_partition: tag = 0x%08x, expected = 0x%08x\n",
+           g_part->hdr.ui_fw_tag, RK_PARTITION_TAG);
 		if (g_part->hdr.ui_fw_tag == RK_PARTITION_TAG) {
 			part_num = g_part->hdr.ui_part_entry_count;
 			desity = g_boot_ops->get_capacity();

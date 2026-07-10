@@ -437,6 +437,12 @@ u32 nandc_flash_init(void __iomem *nandc_addr)
 
 	for (cs = 0; cs < MAX_FLASH_NUM; cs++) {
 		flash_read_id_raw(cs, id_byte[cs]);
+		pr_err("nand id: %02x %02x %02x %02x %02x\n",
+			id_byte[cs][0],
+			id_byte[cs][1],
+			id_byte[cs][2],
+			id_byte[cs][3],
+			id_byte[cs][4]);
 		if (cs == 0) {
 			if (id_byte[0][0] == 0xFF ||
 			    id_byte[0][0] == 0 ||
@@ -454,7 +460,8 @@ u32 nandc_flash_init(void __iomem *nandc_addr)
 			    id_byte[0][1] != 0xAC &&
 			    id_byte[0][1] != 0x6A &&
 			    id_byte[0][1] != 0xD7 &&
-			    id_byte[0][1] != 0x63) {
+			    id_byte[0][1] != 0x63 &&
+    			id_byte[0][1] != 0xDE) {
 				pr_err("The device not support yet!\n");
 
 				return FTL_UNSUPPORTED_FLASH;
@@ -519,6 +526,12 @@ u32 nandc_flash_init(void __iomem *nandc_addr)
 		nand_para.page_per_blk = 64;
 		nand_para.plane_per_die = 2;
 		nand_para.blk_per_plane = 2048;
+	} else if (id_byte[0][1] == 0x63 && id_byte[0][3] == 0x19) { /* SanDisk SDTNRGAMA-008G ID: 45 DE 94 93 76 50 8GB MLC, ECC=60bit */
+		nand_para.sec_per_page  = 32;    /* Page 16KB = 32个512B sector */
+		nand_para.page_per_blk  = 256;   /* Block 4096KB / 16KB = 256页 */
+		nand_para.plane_per_die = 2;
+		nand_para.blk_per_plane = 2048;
+		nand_para.ecc_bits      = 40;    /* 两个loader一致，40bit */
 	}
 	flash_die_info_init();
 	flash_bch_sel(nand_para.ecc_bits);

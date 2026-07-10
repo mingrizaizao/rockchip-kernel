@@ -59,6 +59,7 @@ mali_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
 
 	freq = *target_freq;
 
+	printk(KERN_INFO "mali_devfreq_target: target_freq = %lu, flags = 0x%x\n", *target_freq, flags);
 	rcu_read_lock();
 	opp = devfreq_recommended_opp(dev, &freq, flags);
 	if (IS_ERR(opp)) {
@@ -79,6 +80,7 @@ mali_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
 #ifdef CONFIG_REGULATOR
 		if (mdev->current_voltage == voltage)
 			return 0;
+		printk("111111111111111111111111");
 		err = regulator_set_voltage(mdev->regulator, voltage, INT_MAX);
 		if (err) {
 			dev_err(dev, "Failed to set voltage (%d)\n", err);
@@ -90,8 +92,11 @@ mali_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
 	}
 
 #ifdef CONFIG_REGULATOR
+//[  202.017385] 212121212121212121212: 1250000,   (null), 975000, 200000000, 480000000
+		printk("212121212121212121212: %lu, %p, %lu, %lu, %lu\n", voltage, mdev->regulator, mdev->current_voltage, old_freq, freq);
 	if (mdev->regulator && mdev->current_voltage != voltage &&
 	    old_freq < freq) {
+		printk("2222222222222222222222222222222222\n");
 		err = regulator_set_voltage(mdev->regulator, voltage, INT_MAX);
 		if (err) {
 			MALI_PRINT_ERROR(("Failed to increase voltage (%d)\n", err));
@@ -100,7 +105,10 @@ mali_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
 	}
 #endif
 
+		printk("33333333333333333333333333333333333: %lu\n", freq);
 	err = clk_set_rate(mdev->clock, freq);
+	printk("clk_get_rate=%lu\n", clk_get_rate(mdev->clock));
+		printk("3131313131313131313131313131313131313131313131313131313131313131313131: %d\n", err);
 	if (err) {
 		MALI_PRINT_ERROR(("Failed to set clock %lu (target %lu)\n", freq, *target_freq));
 		return err;
@@ -111,8 +119,10 @@ mali_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
 		mdev->devfreq->last_status.current_frequency = freq;
 
 #ifdef CONFIG_REGULATOR
+		printk("414141414141414141414: %lu, %p, %lu, %lu, %lu", voltage, mdev->regulator, mdev->current_voltage, old_freq, freq);
 	if (mdev->regulator && mdev->current_voltage != voltage &&
 	    old_freq > freq) {
+		printk("4444444444444444444");
 		err = regulator_set_voltage(mdev->regulator, voltage, INT_MAX);
 		if (err) {
 			MALI_PRINT_ERROR(("Failed to decrease voltage (%d)\n", err));
@@ -123,8 +133,10 @@ mali_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
 
 	mdev->current_voltage = voltage;
 
+		printk("55555555555");
 	mali_pm_reset_dvfs_utilisation(mdev);
 
+		printk("666666666666666");
 	return err;
 }
 

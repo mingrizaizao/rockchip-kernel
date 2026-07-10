@@ -3042,8 +3042,11 @@ out2:
  */
 int regulator_set_voltage(struct regulator *regulator, int min_uV, int max_uV)
 {
+
 	int ret = 0;
 
+	printk("regulator_set_voltage: regulator=%s, min_uV=%d, max_uV=%d\n",
+	       regulator->rdev->desc->name, min_uV, max_uV);
 	regulator_lock_supply(regulator->rdev);
 
 	ret = regulator_set_voltage_unlocked(regulator, min_uV, max_uV);

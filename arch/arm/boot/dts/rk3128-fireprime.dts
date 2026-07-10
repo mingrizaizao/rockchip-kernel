@@ -49,7 +49,7 @@
 	model = "Rockchip RK3128 Fireprime board";
 	compatible = "rockchip,rk3128";
 	chosen {
-		bootargs = "earlycon=uart8250,mmio32,0x20068000 earlyprintk console=ttyFIQ0 rw root=PARTUUID=614e0000-0000 rootwait";
+		bootargs = "earlycon=uart8250,mmio32,0x20064000 earlyprintk console=ttyFIQ0 rw swiotlb=1 root=PARTUUID=fd800c6c-2fdb-4502-82cb-e61f66b9a221 rootwait";
 	};
 
 	cpuinfo {
@@ -60,13 +60,15 @@
 
 	fiq-debugger {
 		compatible = "rockchip,fiq-debugger";
-		rockchip,serial-id = <2>;
+		rockchip,serial-id = <1>;
 		rockchip,signal-irq = <159>;
 		rockchip,wake-irq = <0>;
 		/* If enable uart uses irq instead of fiq */
 		rockchip,irq-mode-enable = <1>;
 		rockchip,baudrate = <115200>;  /* Only 115200 and 1500000 */
 		interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+    	pinctrl-0 = <&uart1_xfer>;
 		status = "okay";
 	};
 
@@ -77,6 +79,7 @@
 		autorepeat;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pwrbtn>;
+		status = "disabled";
 
 		button@0 {
 			gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
@@ -185,7 +188,7 @@
 		pinctrl-0 = <&uart0_rts>;
 		pinctrl-1 = <&uart0_rts_gpio>;
 		BT,power_gpio = <&gpio1 RK_PA3 GPIO_ACTIVE_HIGH>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	clkin_gmac: external-gmac-clock {
@@ -195,13 +198,6 @@
 		#clock-cells = <0>;
 	};
 
-	vcc_phy: vcc-phy-regulator {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		regulator-name = "vcc_phy";
-		regulator-always-on;
-		regulator-boot-on;
-	};
 
 	vcc_sys: vcc-sys {
 		compatible = "regulator-fixed";
@@ -287,37 +283,33 @@
 	status = "okay";
 };
 
-&emmc {
-	bus-width = <8>;
-	cap-mmc-highspeed;
-	supports-emmc;
-	disable-wp;
-	non-removable;
-	num-slots = <1>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&emmc_clk &emmc_cmd &emmc_bus8>;
+&nandc {
 	status = "okay";
 };
 
 &gmac {
-	assigned-clocks = <&cru SCLK_MAC>;
-	assigned-clock-parents = <&clkin_gmac>;
-	clock_in_out = "input";
-	pinctrl-names = "default";
-	pinctrl-0 = <&rgmii_pins>;
-	phy-supply = <&vcc_phy>;
-	phy-mode = "rgmii";
+
+	phy-mode = "rmii";
+	clock_in_out = "output";
+	tx_delay = <0x30>;
+    rx_delay = <0x10>;
+	
 	snps,reset-active-low;
-	snps,reset-delays-us = <0 10000 50000>;
 	snps,reset-gpio = <&gpio2 24 GPIO_ACTIVE_LOW>;
-	tx_delay = <0x1d>;
-	rx_delay = <0x10>;
+	snps,reset-delays-us = <0 10000 50000>;
+
+	assigned-clocks = <&cru SCLK_MAC_SRC>;
+    assigned-clock-rates = <50000000>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&rmii_pins>;
+
+	
 	status = "okay";
 };
 
 &gpu {
 	status = "okay";
-	mali-supply = <&vdd_logic>;
 };
 
 &hdmi {
@@ -579,10 +571,20 @@
 	};
 
 	uart0{
-		uart0_rts_gpio: uart0-rts-gpio{
-			rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
+		 uart0_xfer: uart0-xfer {
+            rockchip,pins = <2 RK_PD2 2 &pcfg_pull_default>,
+                            <2 RK_PD3 2 &pcfg_pull_none>;
+        };
+        uart0_rts_gpio: uart0-rts-gpio {
+            rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
 	};
+	uart1 {
+        uart1_xfer: uart1-xfer {
+            rockchip,pins = <1 RK_PB1 2 &pcfg_pull_default>,
+                            <1 RK_PB2 2 &pcfg_pull_default>;
+        };
+    };
 
 	sdio-pwrseq{
 		wifi_enable_h: wifi-enable-h{
@@ -616,7 +618,11 @@
 			<0xe5   KEY_RIGHT>;
 	};
 };
-
+&uart1 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart1_xfer>;
+    status = "disabled";
+};
 &rga {
 	status = "okay";
 };
@@ -636,7 +642,7 @@
 	ignore-pm-notify;
 	keep-power-in-suspend;
 	cd-gpios = <&gpio1 RK_PC1 GPIO_ACTIVE_HIGH>; /* CD GPIO */
-	status = "disabled";
+	status = "okay";
 };
 
 &sdio {
@@ -664,7 +670,7 @@
 
 &uart0{
 	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_xfer &uart0_cts>;
+	pinctrl-0 = <&uart0_xfer>;
 	status = "okay";
 };
 

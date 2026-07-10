@@ -29,7 +29,7 @@ int pinctrl_bind_pins(struct device *dev)
 
 	dev->pins->p = devm_pinctrl_get(dev);
 	if (IS_ERR(dev->pins->p)) {
-		dev_dbg(dev, "no pinctrl handle\n");
+		dev_err(dev, "no pinctrl handle\n");
 		ret = PTR_ERR(dev->pins->p);
 		goto cleanup_alloc;
 	}
@@ -37,7 +37,7 @@ int pinctrl_bind_pins(struct device *dev)
 	dev->pins->default_state = pinctrl_lookup_state(dev->pins->p,
 					PINCTRL_STATE_DEFAULT);
 	if (IS_ERR(dev->pins->default_state)) {
-		dev_dbg(dev, "no default pinctrl state\n");
+		dev_err(dev, "no default pinctrl state\n");
 		ret = 0;
 		goto cleanup_get;
 	}
@@ -46,7 +46,7 @@ int pinctrl_bind_pins(struct device *dev)
 					PINCTRL_STATE_INIT);
 	if (IS_ERR(dev->pins->init_state)) {
 		/* Not supplying this state is perfectly legal */
-		dev_dbg(dev, "no init pinctrl state\n");
+		dev_err(dev, "no init pinctrl state\n");
 
 		ret = pinctrl_select_state(dev->pins->p,
 					   dev->pins->default_state);
@@ -55,7 +55,7 @@ int pinctrl_bind_pins(struct device *dev)
 	}
 
 	if (ret) {
-		dev_dbg(dev, "failed to activate initial pinctrl state\n");
+		dev_err(dev, "failed to activate initial pinctrl state\n");
 		goto cleanup_get;
 	}
 
@@ -69,13 +69,13 @@ int pinctrl_bind_pins(struct device *dev)
 					PINCTRL_STATE_SLEEP);
 	if (IS_ERR(dev->pins->sleep_state))
 		/* Not supplying this state is perfectly legal */
-		dev_dbg(dev, "no sleep pinctrl state\n");
+		dev_err(dev, "no sleep pinctrl state\n");
 
 	dev->pins->idle_state = pinctrl_lookup_state(dev->pins->p,
 					PINCTRL_STATE_IDLE);
 	if (IS_ERR(dev->pins->idle_state))
 		/* Not supplying this state is perfectly legal */
-		dev_dbg(dev, "no idle pinctrl state\n");
+		dev_err(dev, "no idle pinctrl state\n");
 #endif
 
 	return 0;
