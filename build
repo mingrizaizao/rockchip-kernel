@@ -2,14 +2,14 @@ export ARCH=arm
 export CROSS_COMPILE=~/gcc-linaro-6.3.1-2017.05-i686_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
 
 make rockchip_linux_defconfig
-make rk3128-fireprime.img
+make rk3128-txcz-rk3128-v3-1.img
 
 
 cp resource.img /mnt/f/rk3128/
 mkbootimg --kernel ~/kernel/arch/arm/boot/zImage --ramdisk ~/initrd.new.gz -o linux-boot.img
 cp linux-boot.img /mnt/f/rk3128/
 cp ~/kernel/arch/arm/boot/zImage /mnt/f/rk3128/
-cp ~/kernel/arch/arm/boot/dts/rk3128-fireprime.dtb /mnt/f/rk3128/
+cp ~/kernel/arch/arm/boot/dts/rk3128-txcz-rk3128-v3-1.dtb /mnt/f/rk3128/
 echo "Build completed and linux-boot.img copied to /mnt/f/rk3128/"
 
 
