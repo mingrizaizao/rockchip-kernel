@@ -59,7 +59,7 @@ mali_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
 
 	freq = *target_freq;
 
-	printk(KERN_INFO "mali_devfreq_target: target_freq = %lu, flags = 0x%x\n", *target_freq, flags);
+	// printk(KERN_INFO "mali_devfreq_target: target_freq = %lu, flags = 0x%x\n", *target_freq, flags);
 	rcu_read_lock();
 	opp = devfreq_recommended_opp(dev, &freq, flags);
 	if (IS_ERR(opp)) {
